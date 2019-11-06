@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Daly Task Register</title>
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha256-YLGeXaapI0/5IgZopewRJcFXomhRMlYYjugPLSyNjTY=" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha256-CjSoeELFOcH0/uxWu6mC/Vlrc1AARqbm/jiiImDGV3s=" crossorigin="anonymous"></script>
+    <style> 
+    body{
+        font-family: 'PT Sans', sans-serif;
+        font-size: 14px;
+    }
+    
+    table{width: 100%;}
+    table td{border: 0px solid red; text-align: center;}
+    table textarea{ width: calc(100% - 20px); height: 30px;border: 0px solid red;
+    /* background: #bdbdbd; */
+    padding: 5px 10px;} 
+    button {
+    background: #146FCC;
+    border: 0px solid red;
+    padding: 5px 10px;
+    border-radius: 3px;
+    display: inline-block;
+    color: #eaeaea;
+    text-transform: uppercase;
+}
+input[type='number']{ width: 70px; }
+textarea.form-control{ height: 54px; }
+thead {
+    background:#FF6840;
+}
+.no-gutters  > .col  > [class*="col-"] {
+    padding-right: 0;
+    padding-left: 0;
+  }
+}
+.dayy {
+    /* background: #dedede; */
+    display: inline-block;
+    padding: 5px 10px;
+    width: 30px;
+    text-align: center;
+    border-radius: 5px;
+    color: #CC2014;
+}
+.day{
+    font-size: 32px;
+    margin-top: -7px;
+    color:#146fcc
+}
+.weekend button{
+  
+    background: #FF6840;
+    /* border-bottom: 2px solid #ff684c; */
+    color:#FFFFFF
+}
+.weekend .day{
+    color:#FF6840
+}
+.table span.pull-left {
+    float: left;
+    color: #ffffff;
+    font-size: 21px;
+}
+    </style>
+</head>
+<body ng-app="dtr" ng-controller="main">
+    <div>
+<!-- {{task}} -->
+<table class="table table-striped" ng-cloak>
+    <thead>
+        <tr>
+            <td colspan="7"><span class="pull-left" >Time Sheet notes </span><button class="pull-right" ng-click="exportToCsv(task)" >Download Data in CSV</button></td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="day in task track by $index" ng-class="(day.day | date:'EEE') == 'Sat' || (day.day | date:'EEE') == 'Sun'?'weekend':''">
+            <td>
+                <!-- <span class="dayy d-none"> {{$index + 1}} </span>  -->
+                <div class="container no-gutters">
+                <div class="row">
+                    <div class="col"> <div class="row day">	 {{ day.day | date:'dd'}} </div> </div>
+                    <div class="col">
+                            <div class="row">  {{ day.day | date:'MM'}}</div>
+                            <div class="row">  {{ day.day | date:'EEE'}}</div>
+                    </div>
+                </div>
+            </div>
+                
+                </td>
+            <td><input  class="form-control" type="text" placeholder="Project / Task" ng-model=day.project > </td>
+            <td> <textarea class="form-control" placeholder="Description" name="" id={{$index}} ng-model=day.task cols="30" rows="10"></textarea>  </td>
+            <td><button ng-click="copy($index)" >copy</button></td>
+            <td> 
+                <div class="input-group" style="width: 118px;">
+                        <input type="number" class="form-control"  ng-model=day.hrs aria-label="Recipient's username" aria-describedby="basic-addon2">
+                        <div class="input-group-append">
+                          <span class="input-group-text" >Hrs</span>
+                        </div>
+                      </div>
+                     </td>
+            <td>
+                <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                          <div class="input-group-text">
+                            <input type="checkbox" ng-model="day.progress" aria-label="Checkbox for following text input">
+                          </div>
+                        </div>
+                         <input type="text" class="form-control"  aria-label="Text input with checkbox" disabled 
+                         ng-model="day.progress?'Completed':'Inprogress'">
+                      </div>
+                    </td>
+            <td> <button ng-click="update()" >UPDATE</button> <button ng-click="day.task='';day.project='';day.hrs=9;day.progress=false" >CLEAR</button> </td>
+        </tr>
+    </tbody>
+</table>
+    </div>
+    <script src="angular.min.js"></script>
+    <script src="jquery-3.2.1.min.js"></script>
+    <script src="jquery-ui.js"></script>
+    <script src="angular-route.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
