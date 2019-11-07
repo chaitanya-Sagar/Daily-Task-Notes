@@ -1,7 +1,7 @@
 var app = angular.module("dtr", []);
 
 app.controller("main", function ($scope, $http, $compile, $rootScope, $window, $timeout, $parse) {
-let  today = new Date();
+var  today = new Date();
 month = today.getMonth() + 1
 $scope.task = [];
 //$scope.updateTime = new Date();
@@ -20,20 +20,26 @@ if(isChrome){
 
        var dataa =  localStorage.getItem("task");
 
-       let lastTime = parseInt(localStorage.getItem("updateTime"));
+     let lastTime = parseInt(localStorage.getItem("updateTime"));
+       
+      // lastTime = 1572822792000 //11pm 6 nov
 
+   let dd = new Date(lastTime).setHours(0,0,0,0)
+   let ee = today.setHours(0,0,0,0)
        
+       let daysDiff =  0;
+
+        daysDiff =  (ee - dd) /86400000;
+
+       console.log('Last Saved '+ daysDiff+'Days ago')
        
-       let daysDiff = today.getTime() - lastTime
-       
-       daysDiff = parseInt(daysDiff / (1000 * 3600 * 24))
-       
-       //alert(daysDiff)
-       
-         
-           $scope.task = dataa;
-           $scope.task = angular.fromJson($scope.task)
-if(daysDiff>0){
+       $scope.task = dataa;
+       $scope.task = angular.fromJson($scope.task)
+
+
+
+if(daysDiff > 0 && daysDiff < 40){
+
            for(let i = 0; i < daysDiff ; i++){
            
             $scope.task.pop()
@@ -89,6 +95,7 @@ $scope.update = function(){
 let strgii = JSON.stringify($scope.task),
 
 time = new Date()//.format('dd/mm/yyyy');
+
 
     localStorage.setItem("task",strgii );
     localStorage.setItem("updateTime", JSON.stringify(time.getTime()));
