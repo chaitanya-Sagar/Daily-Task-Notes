@@ -47,6 +47,7 @@ if(daysDiff > 0 && daysDiff < 40){
             let datee = new Date() - i*(1000*3600*24)
 
             let obj = {
+                
                 "day":datee,
                 "project":"",
                 "hrs":9,
@@ -54,7 +55,8 @@ if(daysDiff > 0 && daysDiff < 40){
                 "task":""
             }
         
-            $scope.task.unshift(obj)
+            // $scope.task.unshift(obj)
+            $scope.task.splice(i, 0, obj)
         
            }
         }
