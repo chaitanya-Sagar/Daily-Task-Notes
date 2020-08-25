@@ -1,10 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE HTML>
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Daly Task Register</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha256-+N4/V/SbAFiW1MPBCXnfnP9QSN3+Keu+NlB+0ev/YKQ=" crossorigin="anonymous" />
     <link href="https://fonts.googleapis.com/css?family=PT+Sans&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha256-YLGeXaapI0/5IgZopewRJcFXomhRMlYYjugPLSyNjTY=" crossorigin="anonymous" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha256-CjSoeELFOcH0/uxWu6mC/Vlrc1AARqbm/jiiImDGV3s=" crossorigin="anonymous"></script>
@@ -13,7 +14,14 @@
         font-family: 'PT Sans', sans-serif;
         font-size: 14px;
     }
-    
+    .dropzone:hover{ background:#ffffff;}
+    .dropzone{
+        background: #e8e8e8;
+    min-height: 30px;
+    width: 100%;
+    padding: 20px;
+
+    }
     table{width: 100%;}
     table td{border: 0px solid red; text-align: center;}
     table textarea{ width: calc(100% - 20px); height: 30px;border: 0px solid red;
@@ -66,45 +74,119 @@ thead {
     color: #ffffff;
     font-size: 21px;
 }
+.lesspad div[class*="col-"] {
+    margin-left: 5px;
+    margin-right: 5px;
+    padding: 5px;
+}
     </style>
 </head>
 <body ng-app="dtr" ng-controller="main">
-    <div>
+    <div class="container-fluedic" >
+         <div class="row">
+     <div class="col-md-2" id="dragFns" >
+            <button ng-show="addPrj" ng-click="addPrj=!addPrj" >Add Project</button >
+            <input ng-show="!addPrj" type="text" ng-model="newProject" />
+            <i ng-show="!addPrj" class="fa fa-check" ng-click="addProject2(newProject)" ></i>
+            <i ng-show="!addPrj" class="fa fa-times" ng-click="addPrj = !addPrj" ></i>
+           
+
+         <ul class="list-group" ng-repeat="list in basePrj" >
+             <li class="list-group-item" > {{list.project}}
+             <ul class="list-group" >
+                 <li class="list-group-item" draggable="true" id="{{$parent.$index +'-'+ $index}}" data-project="{{key}}" ondragstart="drag(event)" ng-repeat="x in list.task" >{{x}}</li>
+                 <li class="list-group-item" >
+                     
+                    <i class="fa fa-plus" ng-init="close = false" ng-show="!close" ng-click="close=!close" ></i>
+                        <input  ng-show="close"  type="text" ng-model="newTask" />
+                        <i ng-show="close" class="fa fa-check" ng-click="addTask(newTask,$index)" ></i>
+                        <i ng-show="close" class="fa fa-times" ng-click="close=!close" ></i>
+
+                 </li>
+
+             </ul>
+            </li>
+         </ul>
+     </div>
+      <div class="col-md-10">
 <!-- {{task}} -->
-<table class="table table-striped" ng-cloak>
+<table class="table table-striped" ng-cloak >
     <thead>
         <tr>
-            <td colspan="7"><span class="pull-left" >Time Sheet notes </span><button class="pull-right" ng-click="exportToCsv(task)" >Download Data in CSV</button></td>
+            <td colspan="2"><span class="pull-left" >Time Sheet notes </span><button class="pull-right" ng-click="exportToCsv(task)" >Download Data in CSV</button></td>
         </tr>
     </thead>
     <tbody>
-        <tr ng-repeat="day in task track by $index" ng-class="(day.day | date:'EEE') == 'Sat' || (day.day | date:'EEE') == 'Sun'?'weekend':''">
-            <td>
+        <tr ng-repeat="day in task track by $index" repeat-done="foo()" ng-class="(day.day | date:'EEE') == 'Sat' || (day.day | date:'EEE') == 'Sun'?'weekend':''">
+            <td width="200" >
                 <!-- <span class="dayy d-none"> {{$index + 1}} </span>  -->
-                <div class="container no-gutters">
+                <div class="container no-gutters" >
                 <div class="row">
-                    <div class="col"> <div class="row day">	 {{ day.day | date:'dd'}} </div> </div>
+                    <div class="col"> <div  class="row day">	 {{ day.day | date:'dd'}} </div> </div>
                     <div class="col">
-                            <div class="row">  {{ day.day | date:'MM'}}</div>
+                            <div class="row" >  {{ day.day | date:'MM'}}</div>
                             <div class="row">  {{ day.day | date:'EEE'}}</div>
                     </div>
                 </div>
             </div>
                 
                 </td>
-            <td><input  class="form-control" type="text" placeholder="Project / Task" ng-model=day.project > </td>
-            <td> <textarea class="form-control" placeholder="Description" name="" id={{$index}} ng-model=day.task cols="30" rows="10"></textarea>  </td>
-            <td><button ng-click="copy($index)" >copy</button></td>
-            <td> 
-                <div class="input-group" style="width: 118px;">
-                        <input type="number" class="form-control"  ng-model=day.hrs aria-label="Recipient's username" aria-describedby="basic-addon2">
-                        <div class="input-group-append">
-                          <span class="input-group-text" >Hrs</span>
+            <td  >
+                <!-- project start -->
+                <!-- <i  ng-click="addProject($index)"  class="fas fa-folder-plus"></i> -->
+                <div class="row lesspad">
+                <div class="col-md-12 dropzone" id="{{'drp'+$index}}" style="background: #cccccc;" data-index="{{$index}}" 
+                ondrop="drop(event)" ondragover="allowDrop(event)" >Drag and Drop Tasks here</div>
+            </div>
+                <div class="row lesspad" ondragover="allowDrop(event)"  ng-repeat="projects in day.project" >
+
+                 
+                    <div class="col-md-3">
+                       
+                
+                      {{ projects.project+' / '+ projects.task}}
+                     
+                    </div>
+
+                    <div class="col-md-3">
+                            <textarea class="form-control" placeholder="Description" name="" id={{$index}} ng-model=projects.desc cols="30" rows="10"></textarea> 
+                    </div>
+                    <div class="col-md-2"> <div class="input-group" style="width: 118px;">
+                            <input type="number" class="form-control"  ng-model=projects.hrs aria-label="Recipient's username" aria-describedby="basic-addon2">
+                            <div class="input-group-append">
+                              <span class="input-group-text" >Hrs</span>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                     </td>
-            <td>
-                <div class="input-group mb-3">
+                        <div class="col-md-2">
+                                <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                          <div class="input-group-text">
+                                            <input type="checkbox" ng-model="projects.progress" aria-label="Checkbox for following text input">
+                                          </div>
+                                        </div>
+                                         <input type="text" class="form-control"  aria-label="Text input with checkbox" disabled 
+                                         ng-model="projects.progress?'Completed':'Inprogress'">
+                                      </div>
+                           
+                        </div>
+                        <div class="col-md-1">
+
+                                <i  ng-click="projects.task='';projects.project='';projects.hrs=9;projects.progress=false"class="fas fa-sync"></i>
+                                <i ng-click="removeProjec($parent.$index , $index)" class="fa fa-trash"></i>
+
+                        </div>
+
+                </div>
+                  
+
+          
+
+                 
+                
+                
+               
+                <!-- <div class="input-group mb-3">
                         <div class="input-group-prepend">
                           <div class="input-group-text">
                             <input type="checkbox" ng-model="day.progress" aria-label="Checkbox for following text input">
@@ -113,16 +195,23 @@ thead {
                          <input type="text" class="form-control"  aria-label="Text input with checkbox" disabled 
                          ng-model="day.progress?'Completed':'Inprogress'">
                       </div>
-                    </td>
-            <td> <button ng-click="update()" >UPDATE</button> <button ng-click="day.task='';day.project='';day.hrs=9;day.progress=false" >CLEAR</button> </td>
+             <button ng-click="update()" >UPDATE</button> <button ng-click="day.task='';day.project='';day.hrs=9;day.progress=false" >CLEAR</button> 
+             -->
+
+            </td>
         </tr>
     </tbody>
 </table>
     </div>
+</div> </div>
+<script src="jquery-3.2.1.min.js"></script>
+<script src="jquery-ui.js"></script>
     <script src="angular.min.js"></script>
-    <script src="jquery-3.2.1.min.js"></script>
-    <script src="jquery-ui.js"></script>
     <script src="angular-route.js"></script>
     <script src="script.js"></script>
+    <script src="sample.js"></script>
+    <script>
+
+</script>
 </body>
 </html>

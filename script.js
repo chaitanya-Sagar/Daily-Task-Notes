@@ -1,11 +1,22 @@
+var drag,drop,allowDrop,noAllowDrop;
 var app = angular.module("dtr", []);
 
 app.controller("main", function ($scope, $http, $compile, $rootScope, $window, $timeout, $parse) {
+
+$scope.task = [];
+  
+$scope.call=['second','first','nothing','Never', 'Gonna', 'Give', 'You', 'Up'];
+
+
+  
 var  today = new Date();
 month = today.getMonth() + 1
-$scope.task = [];
-//$scope.updateTime = new Date();
+// $scope.basePrj = [];
+// $scope.basePrj = [{"CCC":['360View','geoView']},{"prdPlatform":['ng8','0Auth','Theming']}];
 
+$scope.basePrj = [{"project":"CCC","task":["task1","task2","task3"]},{"project":"Plotform","task":["taskp1","taskp2","taskp3"]}];
+
+//$scope.updateTime = new Date();
 $scope.init = function(){
     var isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
 if(isChrome){
@@ -52,7 +63,8 @@ if(daysDiff > 0 && daysDiff < 40){
                 "project":"",
                 "hrs":9,
                 "progress":false,
-                "task":""
+                "task":"",
+                "desc":""
             }
         
             // $scope.task.unshift(obj)
@@ -67,10 +79,12 @@ if(daysDiff > 0 && daysDiff < 40){
 
             let obj = {
                 "day":datee,
-                "project":"",
-                "hrs":9,
-                "progress":false,
-                "task":""
+                "project":[
+                    
+                      //  {"project":"","progress":false,"hrs":9, "task":"","desc":""}
+
+                    ]
+                
             }
         
             $scope.task.push(obj)
@@ -80,12 +94,50 @@ if(daysDiff > 0 && daysDiff < 40){
     }
 }
 $scope.init()
+
+// $(document).on('ondrop','td',function(){alert()})
 $scope.copy = function(id) {
     let idd = JSON.stringify(id)
     let textarea = document.getElementById(idd);
     textarea.select();
     document.execCommand("copy");
   }
+
+$scope.removeProjec = function(parntIndex,id){
+
+    $scope.task[parntIndex].project.splice(id,1)
+}
+
+$scope.addProject2 = function(prjName){
+  // alert(prjName.length)
+
+if(prjName.length >0 && typeof(prjName) !== "undefined"){
+
+  $scope.basePrj.push({"project":prjName,"task":[]})
+  $scope.addPrj = ! $scope.addPrj
+
+}
+type
+
+}
+$scope.addTask = function(prjName,i){
+// alert(i)
+if(prjName.length >0 && typeof(prjName) !== "undefined"){
+  $scope.basePrj[i].task.push(prjName)
+}
+}
+
+$scope.addPrj=true
+$scope.addProject = function(id,prjName,task){
+// alert(typeof(id))
+// console.log('on drop'+id)
+
+  let obj =  {"project":prjName,"progress":false,"hrs":4,"task":task, "desc":"Working on "+task}
+ 
+//console.log($scope.task)
+    $scope.task[id].project.unshift(obj)
+  //$scope.task[0].project.sub.push([obj])
+}
 
 $scope.update = function(){
 
@@ -136,6 +188,74 @@ $scope.exportToCsv = function(Results) {
         x.click();
       }
 
+      
+
+
      // $scope.exportToCsv($scope.task)
     //   $scope.exportToCsv([['test',124],['test',124],['test',124]])
-})//controler end
+
+    drag = function (ev){
+      //let data = e.target.innerText
+      ev.dataTransfer.setData('text', ev.target.id);
+      // ev.dataTransfer.setData('text', ev.target.innerHtml);
+
+  
+      //$scope.addProject(1,'sdfsf')
+
+    //  console.log(ev)
+  }
+    drop = function (ev,index){
+
+      ev.preventDefault();
+
+    var data = ev.dataTransfer.getData("text");
+    
+    //  console.log(ev)
+      let idx =$(ev.target).attr('data-index')
+      if(idx === undefined){
+      idx =$(ev.target).parentsUntil( ".dropzone" ).attr('data-index')
+      alert('undefied Plsease Drop in the drop zone')
+
+      return false
+    }
+       // $(ev.target).children().css('pointerEvents','none');
+
+       var projectSplit = data.split('-');
+       //alert($scope.basePrj[parseInt(projectSplit[0])].project)
+
+       //alert($scope.basePrj[parseInt(projectSplit[0])].task[1])
+
+    $scope.addProject(idx, $scope.basePrj[parseInt(projectSplit[0])].project,
+     $scope.basePrj[parseInt(projectSplit[0])].task[parseInt(projectSplit[1])])
+   //  alert(idx)
+    $scope.$apply()
+  }
+  allowDrop = function (ev){
+   ev.preventDefault();
+  //  $('#'+ev.target.id).css('background','red')
+
+    //console.log(ev.target.id)
+
+  //  $(ev.target.id).hide()
+  //   return false;
+}
+// noAllowDrop = function (ev) {
+//   ev.stopPropagation();
+// return false;
+// }
+
+
+    
+    //controler end
+})
+
+app.directive('repeatDone', function() {
+  return function(scope, element, attrs) {
+    element.bind('$destroy', function(event) {
+      if (scope.$last) {
+        scope.$eval(attrs.repeatDone);
+       // alert()
+      }
+    });
+  }
+});
